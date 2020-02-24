@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KafkaStarter"
         mc:Ignorable="d"
-        Title="KafkaStarter" Height="500" Width="900">
+        Title="KafkaStarter" Height="500" Width="900" Closing="Window_Closing">
     <Window.Resources>
         <Style x:Key="FocusVisual">
             <Setter Property="Control.Template">
@@ -109,7 +109,7 @@
         <GroupBox Margin="5" Grid.Column="2" Header="Other Command">
             <DockPanel>
                 <Button Width="100" Margin="5" DockPanel.Dock="Top" HorizontalAlignment="Left" Command="{Binding StartCommand}">Start</Button>
-                <TextBox DockPanel.Dock="Top" Margin="5" TextWrapping="Wrap" Height="60"></TextBox>
+                <TextBox DockPanel.Dock="Top" Margin="5" TextWrapping="Wrap" Height="60" Text="{Binding CommandText}"></TextBox>
                 <ListBox  Margin="5" ItemsSource="{Binding commandConsoles}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ItemContainerStyle="{StaticResource ListBoxItemStyle1}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>

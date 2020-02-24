@@ -20,10 +20,17 @@ namespace KafkaStarter
     /// </summary>
     public partial class MainWindow : Window
     {
+        KafkaStaterViewModel vm;
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = new KafkaStaterViewModel();
+            vm = new KafkaStaterViewModel();
+            this.DataContext = vm;
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            vm.Dispose();
         }
     }
 }

@@ -20,7 +20,7 @@ namespace KafkaStarter
                 p.StartInfo.RedirectStandardInput = true;//接受来自调用程序的输入信息
                 p.StartInfo.RedirectStandardOutput = true;//由调用程序获取输出信息
                 p.StartInfo.RedirectStandardError = true;//重定向标准错误输出
-                p.StartInfo.CreateNoWindow = false;//不显示程序窗口
+                p.StartInfo.CreateNoWindow = true;//不显示程序窗口
                 p.OutputDataReceived += handler;
                 p.Start();//启动程序
 
@@ -63,7 +63,7 @@ namespace KafkaStarter
                 p.StartInfo.RedirectStandardInput = true;//接受来自调用程序的输入信息
                 p.StartInfo.RedirectStandardOutput = true;//由调用程序获取输出信息
                 p.StartInfo.RedirectStandardError = true;//重定向标准错误输出
-                p.StartInfo.CreateNoWindow = false;//不显示程序窗口
+                p.StartInfo.CreateNoWindow = true;//不显示程序窗口
                 p.OutputDataReceived += handler;
                 p.Start();//启动程序
 
