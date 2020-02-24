@@ -10,7 +10,7 @@ namespace KafkaStarter
     public class ProcessHelper
     {
 
-        public static Process CreateProcess(string command, DataReceivedEventHandler handler)
+        public static Process CreateProcess(string command, DataReceivedEventHandler handler, string path = "")
         {
             try
             {
@@ -20,13 +20,22 @@ namespace KafkaStarter
                 p.StartInfo.RedirectStandardInput = true;//接受来自调用程序的输入信息
                 p.StartInfo.RedirectStandardOutput = true;//由调用程序获取输出信息
                 p.StartInfo.RedirectStandardError = true;//重定向标准错误输出
-                p.StartInfo.CreateNoWindow = true;//不显示程序窗口
+                p.StartInfo.CreateNoWindow = false;//不显示程序窗口
                 p.OutputDataReceived += handler;
                 p.Start();//启动程序
 
+
+                if (!string.IsNullOrEmpty(path))
+                {
+                    p.StandardInput.WriteLine(@"cd \");
+                    string root = path.Substring(0, 2);
+                    p.StandardInput.WriteLine($"{root}");
+                    p.StandardInput.WriteLine($"cd {path} &");
+                }
+
                 string strCMD = command;
                 //向cmd窗口发送输入信息
-                p.StandardInput.WriteLine(strCMD + "&exit");
+                p.StandardInput.WriteLine(strCMD);
 
                 p.StandardInput.AutoFlush = true;
 
@@ -43,7 +52,8 @@ namespace KafkaStarter
             }
         }
 
-        public static Process CreateProcess(string command, string path, DataReceivedEventHandler handler)
+
+        public static Process CreateProcess(string path, DataReceivedEventHandler handler)
         {
             try
             {
@@ -57,15 +67,13 @@ namespace KafkaStarter
                 p.OutputDataReceived += handler;
                 p.Start();//启动程序
 
-                p.StandardInput.WriteLine(@"cd \");
-                string root = path.Substring(0, 2);
-                p.StandardInput.WriteLine($"{root}");
-                p.StandardInput.WriteLine($"cd {path} &");
-
-
-                string strCMD = command;
-                //向cmd窗口发送输入信息
-                p.StandardInput.WriteLine(strCMD);
+                if (!string.IsNullOrEmpty(path))
+                {
+                    p.StandardInput.WriteLine(@"cd \");
+                    string root = path.Substring(0, 2);
+                    p.StandardInput.WriteLine($"{root}");
+                    p.StandardInput.WriteLine($"cd {path} &");
+                }
 
                 p.StandardInput.AutoFlush = true;
 

@@ -108,12 +108,12 @@
         </GroupBox>
         <GroupBox Margin="5" Grid.Column="2" Header="Other Command">
             <DockPanel>
-                <Button Width="100" Margin="5" DockPanel.Dock="Top" HorizontalAlignment="Left">Start</Button>
+                <Button Width="100" Margin="5" DockPanel.Dock="Top" HorizontalAlignment="Left" Command="{Binding StartCommand}">Start</Button>
                 <TextBox DockPanel.Dock="Top" Margin="5" TextWrapping="Wrap" Height="60"></TextBox>
-                <ListBox  Margin="5" ItemsSource="{Binding }" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ItemContainerStyle="{StaticResource ListBoxItemStyle1}">
+                <ListBox  Margin="5" ItemsSource="{Binding commandConsoles}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ItemContainerStyle="{StaticResource ListBoxItemStyle1}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock TextWrapping="Wrap" Text="{Binding}" HorizontalAlignment="Stretch" ></TextBlock>
+                            <TextBlock TextWrapping="Wrap" Text="{Binding }" HorizontalAlignment="Stretch" ></TextBlock>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>

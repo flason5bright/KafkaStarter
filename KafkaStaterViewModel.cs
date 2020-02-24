@@ -52,6 +52,7 @@ namespace KafkaStarter
 
         public ICommand StartZokeeper { get { return new RelayCommand(StartZokeeperExcute); } }
         public ICommand StartKafkaServer { get { return new RelayCommand(StartKafkaServerExcute); } }
+        public ICommand StartCommand { get { return new RelayCommand(StartCommandExcute); } }
         public ICommand OpenDirectorySelector
         {
             get
@@ -76,7 +77,6 @@ namespace KafkaStarter
             StringBuilder sb = new StringBuilder();
             zoKeeperProcess = ProcessHelper.CreateProcess("zkServer", new System.Diagnostics.DataReceivedEventHandler((o, e) =>
             {
-                //ZoKeeperConsole = sb.Append(e.Data).Append("\r\n").ToString();
                 App.Current.Dispatcher.Invoke(() =>
                 {
                     zoKeeperConsoles.Add(e.Data);
@@ -92,14 +92,42 @@ namespace KafkaStarter
             if (kafkaServerProcess != null)
                 kafkaServerProcess.Close();
             StringBuilder sb = new StringBuilder();
-            kafkaServerProcess = ProcessHelper.CreateProcess(@".\bin\windows\kafka-server-start.bat .\config\server.properties", KafkaRootPath, new System.Diagnostics.DataReceivedEventHandler((o, e) =>
+            kafkaServerProcess = ProcessHelper.CreateProcess(@".\bin\windows\kafka-server-start.bat .\config\server.properties", new System.Diagnostics.DataReceivedEventHandler((o, e) =>
             {
-                //ZoKeeperConsole = sb.Append(e.Data).Append("\r\n").ToString();
                 App.Current.Dispatcher.Invoke(() =>
                 {
                     kafkaServerConsoles.Add(e.Data);
                 });
-            }));
+            }), KafkaRootPath);
+        }
+
+        private string commandText =
+            @"kafka-topics.bat --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic testDemo";
+        public string CommandText
+        {
+            get { return commandText; }
+            set
+            {
+                commandText = value;
+                NotifyPropertyChanged(nameof(CommandText));
+            }
+        }
+
+        public ObservableCollection<string> commandConsoles { get; set; } = new ObservableCollection<string>();
+
+        private Process commandProcess;
+        private void StartCommandExcute()
+        {
+            if (commandProcess == null)
+            {
+                commandProcess = ProcessHelper.CreateProcess(KafkaRootPath,
+                    new System.Diagnostics.DataReceivedEventHandler((o, e) =>
+                    {
+                        App.Current.Dispatcher.Invoke(() => { commandConsoles.Add(e.Data); });
+                    }));
+            }
+
+            commandProcess.StandardInput.WriteLine(CommandText);
         }
 
     }
