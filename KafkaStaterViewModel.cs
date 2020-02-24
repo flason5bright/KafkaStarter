@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Threading;
 
@@ -35,7 +37,36 @@ namespace KafkaStarter
             }
         }
 
+        private string kafkaRootPath = "Select Kafka root path";
+        public string KafkaRootPath
+        {
+            get { return kafkaRootPath; }
+            set
+            {
+                kafkaRootPath = value;
+                NotifyPropertyChanged(nameof(KafkaRootPath));
+            }
+        }
+
+        public ObservableCollection<string> zoKeeperConsoles { get; set; } = new ObservableCollection<string>();
+
         public ICommand StartZokeeper { get { return new RelayCommand(StartZokeeperExcute); } }
+        public ICommand StartKafkaServer { get { return new RelayCommand(StartKafkaServerExcute); } }
+        public ICommand OpenDirectorySelector
+        {
+            get
+            {
+                return new RelayCommand(() =>
+                {
+                    FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
+                    if (folderBrowser.ShowDialog() == DialogResult.OK)
+                    {
+                        KafkaRootPath = folderBrowser.SelectedPath;
+                    }
+                });
+            }
+        }
+
 
         private Process zoKeeperProcess;
         private void StartZokeeperExcute()
@@ -43,21 +74,32 @@ namespace KafkaStarter
             if (zoKeeperProcess != null)
                 zoKeeperProcess.Close();
             StringBuilder sb = new StringBuilder();
-            zoKeeperProcess = ProcessHelper.CreateProcess("ping 127.0.0.1", new System.Diagnostics.DataReceivedEventHandler((o, e) =>
+            zoKeeperProcess = ProcessHelper.CreateProcess("zkServer", new System.Diagnostics.DataReceivedEventHandler((o, e) =>
             {
-                ZoKeeperConsole = sb.Append(e.Data).Append("\r\n").ToString();
+                //ZoKeeperConsole = sb.Append(e.Data).Append("\r\n").ToString();
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    zoKeeperConsoles.Add(e.Data);
+                });
             }));
+        }
 
+        public ObservableCollection<string> kafkaServerConsoles { get; set; } = new ObservableCollection<string>();
 
-
-            //DispatcherTimer timer = new DispatcherTimer();
-            //timer.Interval = new TimeSpan(0, 0, 5);
-            //timer.Tick += new EventHandler((object sender, EventArgs e) =>
-            // {
-            //     ZoKeeperConsole = process.StandardOutput.ReadToEnd();
-            // });  
-            //timer.Start();
-
+        private Process kafkaServerProcess;
+        private void StartKafkaServerExcute()
+        {
+            if (kafkaServerProcess != null)
+                kafkaServerProcess.Close();
+            StringBuilder sb = new StringBuilder();
+            kafkaServerProcess = ProcessHelper.CreateProcess(@".\bin\windows\kafka-server-start.bat .\config\server.properties", KafkaRootPath, new System.Diagnostics.DataReceivedEventHandler((o, e) =>
+            {
+                //ZoKeeperConsole = sb.Append(e.Data).Append("\r\n").ToString();
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    kafkaServerConsoles.Add(e.Data);
+                });
+            }));
         }
 
     }
